@@ -1,0 +1,61 @@
+import re
+import time
+
+import pytest
+from playwright.sync_api import Page, expect
+from common import test_login
+@pytest.mark.skip("")
+def test_rptprocess(page: Page) -> None:
+    test_login.userlogin(page, "shanghai", "1")
+    page.wait_for_selector("#leftMenuId_DOC_MODULE > span")
+    page.click("#leftMenuId_DOC_MODULE > span")
+    page.get_by_text("报告管理").click()
+    page.get_by_text("报告模板").click()
+    page.get_by_role("button", name="创 建").click()
+    page.get_by_label("创建模板").locator("input[type=\"text\"]").click()
+    tmp_name="回归测试-流程2024"+time.strftime("%Y%m%d%H%M%S")
+    page.get_by_label("创建模板").locator("input[type=\"text\"]").fill(tmp_name)
+    page.get_by_label("创建模板").locator("textarea").click()
+    page.get_by_label("创建模板").locator("textarea").fill("模板描述2024")
+    page.locator("#rc_select_18").click()
+    page.get_by_title("月度").locator("div").click()
+    page.locator("#rc_select_19").click()
+    page.get_by_title("信用风险").locator("span").click()
+    page.locator("#rc_select_20").click()
+    page.get_by_role("tree").locator("div").filter(has_text=re.compile(r"^批发金融$")).click()
+    with page.expect_file_chooser() as fc_info:
+        page.locator("#file").get_by_role("button").click()
+    file_chooser = fc_info.value
+    file_chooser.set_files("../upload_files/中银保险有限公司2024年一季度全面风险报告 - 副本.docx")
+    page.get_by_role("button", name="确 定").click()
+    page.locator("#leftMenuId_DOC_MODULE").get_by_text("报告管理").click()
+    page.get_by_text("报告管理").nth(2).click()
+    page.get_by_role("button", name="创 建").click()
+    page.locator("#tmplName div").nth(3).click()
+    page.locator("#rc_select_14").click()
+    page.locator("#rc_select_14").fill("回归测试-流程2024")
+    page.get_by_text(tmp_name).click()
+    page.get_by_placeholder("请选择月份").click()
+    page.get_by_text("2月", exact=True).click()
+    page.get_by_label("创建报告").locator("textarea").fill("a")
+    page.get_by_label("创建报告").locator("textarea").click()
+    page.get_by_text("a", exact=True).fill("报告描述就是摘要信息")
+    page.get_by_role("button", name="确 定").click()
+    page.get_by_placeholder("请填写报告名称").click()
+    page.get_by_placeholder("请填写报告名称").fill("回归测试-流程")
+    page.get_by_role("button", name="查 询").click()
+    page.get_by_role("button", name="发布").click()
+    page.get_by_role("button", name="确 定").click()
+    page.locator("#leftMenuId_DOC_MODULE").get_by_text("报告管理").click()
+    page.get_by_text("报告查询").click()
+    page.get_by_role("textbox", name="请填写报告名称").click()
+    page.get_by_role("textbox", name="请填写报告名称").fill("回归测试-流程")
+    page.get_by_role("button", name="查 询").click()
+    page.get_by_role("checkbox", name="Press Space to toggle row").check()
+    page.locator(".right_content___3g70y > div > .XFissAgGridReact___1tzKa > .ag-new > .ag-theme-alpine > div > div > .ag-root-wrapper > .ag-root-wrapper-body > .ag-root > .ag-body-viewport > .ag-pinned-left-cols-container > .ag-row-even > div > .ag-cell-wrapper > .ag-selection-checkbox").click()
+    page.get_by_role("checkbox", name="Press Space to toggle row").check()
+    with page.expect_download() as download_info:
+        page.get_by_role("button", name="下 载").click()
+    download = download_info.value
+    page.locator("div:nth-child(2) > img").click()
+    page.locator(".content___KQFL5 > div:nth-child(3)").click()

@@ -1,0 +1,46 @@
+import time
+
+import pytest
+from common import test_login
+from playwright.sync_api import Page, expect
+@pytest.mark.skip("")
+def test_rptpublish(page: Page) -> None:
+    test_login.userlogin(page, "shanghai", "1")
+    page.wait_for_selector("#leftMenuId_DOC_MODULE > span")
+    page.click("#leftMenuId_DOC_MODULE > span")
+    page.get_by_text("报告管理").nth(2).click()
+    page.get_by_role("button", name="创 建").click()
+    page.get_by_role("switch").click()
+    page.locator("#rc_select_17").click()
+    page.get_by_title("日度").locator("div").click()
+    page.get_by_placeholder("请选择日期").click()
+    page.get_by_text("30", exact=True).click()
+    page.locator("#entityTypeName span").nth(1).click()
+    page.get_by_title("单位").locator("div").click()
+    page.locator("#entityName span").nth(1).click()
+    page.get_by_title("普联上海").locator("div").click()
+    page.locator(".XTreeSelect___1IcK0 > .ant-select > .ant-select-selector > .ant-select-selection-item").first.click()
+    page.get_by_title("市场风险").locator("span").click()
+    page.locator("#categoryList_C_DOC_CATEGORY_TYPE > div > .XTreeSelect___1IcK0 > .ant-select > .ant-select-selector > .ant-select-selection-item").click()
+    page.get_by_title("批发金融").locator("span").click()
+    page.get_by_label("创建报告").locator("input[type=\"text\"]").click()
+    page.get_by_label("创建报告").locator("input[type=\"text\"]").fill("2024年7月30日市场风险")
+    page.get_by_label("创建报告").locator("textarea").click()
+    page.get_by_label("创建报告").locator("textarea").fill("报告摘要")
+    with page.expect_file_chooser() as fc_info:
+        page.locator("button").filter(has_text="报告文件").click()
+    file_chooser = fc_info.value
+    file_chooser.set_files("../upload_files/保险公司季度填报模板2024年第1季度.docx")
+    page.get_by_role("button", name="确 定").click()
+    print("报告直接发布成功")
+    page.get_by_placeholder("请填写报告名称").click()
+    page.get_by_placeholder("请填写报告名称").fill("市场风险")
+    page.get_by_role("button", name="查 询").click()
+    page.get_by_role("button", name="撤消").click()
+    # page.get_by_role("button", name="撤消").first.click()
+    page.get_by_text("确认").nth(2).click()
+    print("报告撤消成功")
+    page.locator(".ag-selection-checkbox").click()
+    page.get_by_role("button", name="删 除").click()
+    page.get_by_text("确认", exact=True).click()
+    print("报告删除成功")
